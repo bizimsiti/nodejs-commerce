@@ -7,6 +7,15 @@ const userRoutes = require("./routes/shop");
 const app = express();
 
 //database connection
+const sequelize = require("./utility/database");
+sequelize
+  .sync()
+  .then((result) => {
+    console.log("okey");
+  })
+  .catch((err) => {
+    console.log("hata");
+  });
 
 //pug set
 app.set("view engine", "pug");

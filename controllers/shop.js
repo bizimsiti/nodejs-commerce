@@ -1,15 +1,20 @@
 const Product = require("../models/product");
 const Category = require("../models/category");
 exports.getIndex = (req, res) => {
-  const categories = Category.getAll();
-  Product.getAll()
+  Product.findAll()
     .then((products) => {
-      res.render("shop/index", {
-        title: "Home Page",
-        products: products[0],
-        categories: categories,
-        path: "/"
-      });
+      Category.findAll()
+        .then((categories) => {
+          res.render("shop/index", {
+            title: "Home Page",
+            products: products,
+            categories: categories,
+            path: "/"
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })
     .catch((err) => {
       console.log(err);
@@ -17,15 +22,22 @@ exports.getIndex = (req, res) => {
 };
 
 exports.getProducts = (req, res) => {
-  const categories = Category.getAll();
-  Product.getAll()
+  Product.findAll({
+    attributes: ["id", "name", "price", "img"]
+  })
     .then((products) => {
-      res.render("shop/products", {
-        title: "Home Page",
-        products: products[0],
-        categories: categories,
-        path: "/"
-      });
+      Category.findAll()
+        .then((categories) => {
+          res.render("shop/products", {
+            title: "Products",
+            products: products,
+            categories: categories,
+            path: "/"
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })
     .catch((err) => {
       console.log(err);
@@ -35,28 +47,42 @@ exports.getProducts = (req, res) => {
 exports.getProductsByCategoryId = (req, res) => {
   const categoryid = req.params.categoryid;
   const products = Product.getProductsByCategoryId(categoryid);
-  const categories = Category.getAll();
-
-  res.render("shop/products", {
-    title: "Products",
-    selectedCategory: categoryid,
-    products: products,
-    categories: categories,
-    path: "/products"
+  console.log(products);
+  const categories = Category.getAll().then((categories) => {
+    res.render("shop/products", {
+      title: "Products",
+      selectedCategory: categoryid,
+      products: products[0][0],
+      categories: categories[0],
+      path: "/products"
+    });
   });
 };
 
 exports.getProduct = (req, res) => {
-  Product.getById(req.params.productid)
+  Product.findByPk(req.params.productid)
     .then((product) => {
       res.render("shop/product-detail", {
-        title: product[0][0].name,
-        product: product[0][0],
+        title: product.name,
+        product: product,
         path: "/products"
       });
     })
     .catch((err) => console.log(err));
 };
+/*  Product.findAll({
+    attributes: ["id", "name", "price", "img"],
+    where: { id: req.params.productid }
+  })
+    .then((products) => {
+      res.render("shop/product-detail", {
+        title: products[0].name,
+        product: products[0],
+        path: "/products"
+      });
+    })
+    .catch((err) => console.log(err));
+}; */
 
 exports.getProductDetails = (req, res) => {
   const products = Product.getAll();
