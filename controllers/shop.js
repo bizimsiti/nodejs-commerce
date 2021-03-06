@@ -50,7 +50,7 @@ exports.getProductsByCategoryId = (req, res) => {
   Category.findAll()
     .then((categories) => {
       model.categories = categories;
-      console.log(model.length);
+
       const category = categories.find((i) => i.id == categoryid);
       return category.getProducts();
     })
