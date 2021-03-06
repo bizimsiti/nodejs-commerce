@@ -46,17 +46,24 @@ exports.getProducts = (req, res) => {
 
 exports.getProductsByCategoryId = (req, res) => {
   const categoryid = req.params.categoryid;
-  const products = Product.getProductsByCategoryId(categoryid);
-  console.log(products);
-  const categories = Category.getAll().then((categories) => {
-    res.render("shop/products", {
-      title: "Products",
-      selectedCategory: categoryid,
-      products: products[0][0],
-      categories: categories[0],
-      path: "/products"
-    });
-  });
+  const model = [];
+  Category.findAll()
+    .then((categories) => {
+      model.categories = categories;
+      console.log(model.length);
+      const category = categories.find((i) => i.id == categoryid);
+      return category.getProducts();
+    })
+    .then((products) => {
+      res.render("shop/products", {
+        title: "Products",
+        selectedCategory: categoryid,
+        products: products,
+        categories: model.categories,
+        path: "/products"
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getProduct = (req, res) => {

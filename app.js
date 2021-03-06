@@ -3,15 +3,36 @@ const bp = require("body-parser");
 const path = require("path");
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
-
+const sequelize = require("./utility/database");
 const app = express();
 
 //database connection
-const sequelize = require("./utility/database");
+const Product = require("./models/product");
+const Category = require("./models/category");
+
+Product.belongsTo(Category, {
+  foreignKey: {
+    allowNull: false
+  }
+});
+Category.hasMany(Product);
+
 sequelize
+  /* .sync({
+    force: true
+  }) */
   .sync()
-  .then((result) => {
-    console.log("okey");
+  .then(() => {
+    console.log("database connected!");
+    Category.count().then((count) => {
+      if (count === 0) {
+        Category.bulkCreate([
+          { name: "telefon", description: "telefon kategorisi" },
+          { name: "bilgisayar", description: "bilgisayar kategorisi" },
+          { name: "elektronik", description: "elektronik kategorisi" }
+        ]);
+      }
+    });
   })
   .catch((err) => {
     console.log("hata");
