@@ -171,3 +171,37 @@ exports.getOrders = (req, res) => {
     path: "/orders"
   });
 };
+
+exports.postOrder = (req, res) => {
+  let userCart;
+  req.user
+    .getCart()
+    .then((cart) => {
+      userCart = cart;
+      return cart.getProducts();
+    })
+    .then((products) => {
+      return req.user.createOrder().then((order) => {
+        order.addProducts(
+          products.map((product) => {
+            product.orderItem = {
+              quantity: product.cartItem.quantity,
+              price: product.price
+            };
+            return product;
+          })
+        );
+      });
+    })
+    .then(() => {
+      userCart.setProducts(null);
+    })
+    .then(() => {
+      res.redirect("/orders");
+    })
+    .catch();
+  res.render("shop/orders", {
+    title: "Orders",
+    path: "/orders"
+  });
+};

@@ -40,10 +40,10 @@ Product.belongsToMany(Order, { through: OrderItem });
 
 let _user;
 sequelize
-  .sync({
+  /* .sync({
     force: true
-  })
-  /* .sync() */
+  }) */
+  .sync()
   .then(() => {
     console.log("database connected!");
 
