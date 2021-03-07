@@ -8,7 +8,8 @@ mixin createProduct(product)
                 small.text-muted
                   i.fa.fa-try #{product.price}
             .card-footer.text-center
+              form(action='/cart' method='POST')
                 a.btn.btn-outline-primary.btn-sm(href=`/products/${product.id}`) Details
-                a.btn.btn-outline-primary.btn-sm.ml-3(href=`/products/${product.id}`)
-                  i.fa.fa-angle-double-right
-                  |                     Add to Cart
+                input(type='hidden' name='productId' value=`${product.id}`)
+                button(type='submit').btn.btn-outline-primary.btn-sm.ml-3 Add to Cart
+                

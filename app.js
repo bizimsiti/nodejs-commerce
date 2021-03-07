@@ -28,11 +28,13 @@ Cart.belongsTo(User);
 
 Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
+
+let _user;
 sequelize
-  .sync({
+  /* .sync({
     force: true
-  })
-  //.sync()
+  }) */
+  .sync()
   .then(() => {
     console.log("database connected!");
 
@@ -42,6 +44,16 @@ sequelize
           return User.create({ name: "alimetin", email: "ornek@gmail.com" });
         }
         return user;
+      })
+      .then((user) => {
+        _user = user;
+        return user.getCart();
+      })
+      .then((cart) => {
+        if (!cart) {
+          return _user.createCart();
+        }
+        return cart;
       })
       .then(() => {
         Category.count().then((count) => {
