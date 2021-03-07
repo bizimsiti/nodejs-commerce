@@ -164,12 +164,16 @@ exports.postCartItemDelete = (req, res) => {
 };
 
 exports.getOrders = (req, res) => {
-  const products = Product.getAll();
-  res.render("shop/orders", {
-    title: "Orders",
-    products: products,
-    path: "/orders"
-  });
+  req.user
+    .getOrders({ include: ["products"] })
+    .then((orders) => {
+      res.render("shop/orders", {
+        title: "Orders",
+        orders: orders,
+        path: "/orders"
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.postOrder = (req, res) => {
@@ -200,8 +204,4 @@ exports.postOrder = (req, res) => {
       res.redirect("/orders");
     })
     .catch();
-  res.render("shop/orders", {
-    title: "Orders",
-    path: "/orders"
-  });
 };
