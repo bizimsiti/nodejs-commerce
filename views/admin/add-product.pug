@@ -21,7 +21,7 @@ block content
             select#img.form-control(name='categoryid')
               option(value="-1") select category 
               each category in categories 
-                option(value=`${category.id}` selected=category.id===product.categoryId) #{category.name}
+                option(value=`${category.id}`) #{category.name}
         .form-group.row
           label.col-sm-2.col-form-label(for='productName') Description
           .col-sm-10

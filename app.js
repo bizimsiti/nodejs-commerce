@@ -10,6 +10,8 @@ const app = express();
 const Product = require("./models/product");
 const Category = require("./models/category");
 const User = require("./models/user");
+const Cart = require("./models/cart");
+const CartItem = require("./models/cartItem");
 
 Product.belongsTo(Category, {
   foreignKey: {
@@ -17,8 +19,15 @@ Product.belongsTo(Category, {
   }
 });
 Category.hasMany(Product);
+
 Product.belongsTo(User);
 User.hasMany(Product);
+
+User.hasOne(Cart);
+Cart.belongsTo(User);
+
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
 sequelize
   .sync({
     force: true
@@ -30,7 +39,7 @@ sequelize
     User.findByPk(1)
       .then((user) => {
         if (!user) {
-          User.create({ name: "alimetin", email: "ornek@gmail.com" });
+          return User.create({ name: "alimetin", email: "ornek@gmail.com" });
         }
         return user;
       })
@@ -57,6 +66,14 @@ app.set("views", "./views");
 //middlewares
 app.use(bp.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use((req, res, next) => {
+  User.findByPk(1)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.log(err));
+});
 
 //routers
 
