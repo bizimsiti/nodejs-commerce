@@ -12,6 +12,8 @@ const Category = require("./models/category");
 const User = require("./models/user");
 const Cart = require("./models/cart");
 const CartItem = require("./models/cartItem");
+const Order = require("./models/order");
+const OrderItem = require("./models/orderItem");
 
 Product.belongsTo(Category, {
   foreignKey: {
@@ -29,12 +31,19 @@ Cart.belongsTo(User);
 Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
 
+//one to many
+Order.belongsTo(User);
+User.hasMany(Order);
+//many to many
+Order.belongsToMany(Product, { through: OrderItem });
+Product.belongsToMany(Order, { through: OrderItem });
+
 let _user;
 sequelize
-  /* .sync({
+  .sync({
     force: true
-  }) */
-  .sync()
+  })
+  /* .sync() */
   .then(() => {
     console.log("database connected!");
 

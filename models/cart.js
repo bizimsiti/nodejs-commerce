@@ -1,6 +1,4 @@
 const Sequelize = require("sequelize");
-const { model } = require("../utility/database");
-
 const sequelize = require("../utility/database");
 
 const Cart = sequelize.define("cart", {
